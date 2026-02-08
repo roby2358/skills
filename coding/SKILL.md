@@ -9,6 +9,10 @@ description: Best practices and guidelines for writing code in this project. Use
 
 Write clean, decoupled code properly factored for reuse and clarity.
 
+## Two-Pass Process
+
+Every code generation goes through two passes. The first pass writes the code and gets it working. The second pass reviews and revises for reuse and clarity. Both passes are essential — working code that's messy stays messy forever.
+
 ## Keep it Simple
 
 Keep it simple. Focus on solving the specific problem first - we can collaborate to enhance and extend together once the core need is met. I love collaborating with you, and don't want you getting too far ahead!
