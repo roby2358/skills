@@ -1,17 +1,17 @@
 ---
 name: coding
-description: Best practices and guidelines for writing code in this project. Use when implementing features, refactoring code, or making changes to ensure consistency and quality.
+description: Project-specific coding conventions and constraints. Use when writing, modifying, or refactoring any code, implementing features, writing tests, or building MCP servers in this project.
 ---
 
-# Coding Best Practices
-
-## Core Principles
-
-Write clean, decoupled code properly factored for reuse and clarity.
+# Coding Conventions
 
 ## Two-Pass Process
 
-Every code generation goes through two passes. The first pass writes the code and gets it working. The second pass reviews and revises for reuse and clarity. Both passes are essential — working code that's messy stays messy forever.
+In the first pass keep reuse and clarity top of mind.
+
+Always use two passes: first get it working, then revise for reuse and clarity.
+
+Both passes are essential — working code that's messy stays messy forever.
 
 ## Keep it Simple
 
@@ -45,15 +45,27 @@ Better to fail fast. You MUST NOT provide inline defaults for missing values.
 
 Avoid optional parameters to a function or method. The signature should be the signature, not 2^n variations of it.
 
+## Code Quality
+
+- Write clear, decoupled code with clear names and single responsibilities
+- Use guard clauses to handle edge cases early and reduce nesting
+- Keep functions small and granular — each does one thing well
+- Favor functional internals inside OO containers; expose `map`/`flatMap`-style methods
+- Use shallow call chains — pass returned artifacts call to call
+- Solve the specific problem first; do not over-engineer ahead of requirements
+
+## Parameter Rules
+
+- **No default parameter values.** Fail fast on missing values. Never provide inline defaults unless explicitly requested.
+- **No optional parameters.** The signature is the signature.
+
 ## Testing
 
 Test scripts = unit tests in the test directory, never throwaway scripts - period. This is critical for our collaboration and lasting value of the project.
 
 VERY IMPORTANT: Unit tests are critical to our process - I need you to always write tests as reusable unit tests in the test directory, not throwaway scripts. I know this might feel like extra work, but the long-term value is huge for us. This one's non-negotiable for our collaboration.
 
-# MCP Servers
+## MCP Servers
 
-For MCP servers, support stdio by default. Streamable HTTP is a future step
-
-For python MCP servers, use https://github.com/jlowin/fastmcp  "from mcp.server.fastmcp import FastMCP"
-
+- Default to stdio transport
+- Python MCP servers: use `from mcp.server.fastmcp import FastMCP` (https://github.com/jlowin/fastmcp)
