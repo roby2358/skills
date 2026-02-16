@@ -29,10 +29,10 @@ This requires genuine respect for the other person's intelligence. The method do
 State a broad principle that your interlocutor will immediately endorse — one that also applies, uncomfortably, to their position.
 
 **Example from practice:**
-- Position being examined: "My framework replaces definitions with observables."
-- The move: "Every framework that claims to replace definitions with observables has already smuggled in a definition of what counts as observable."
+- Position being examined: "Our startup moves fast because we don't have bureaucracy."
+- The move: "Every organization that says it has no process actually has process — it's just undocumented and owned by whoever got there first."
 
-**Why this works:** The statement is abstract enough to feel safe. It's about frameworks *in general*, not theirs specifically. Agreement feels costless — until it isn't.
+**Why this works:** The statement is abstract enough to feel safe. It's about organizations *in general*, not theirs specifically. Agreement feels costless — until it isn't.
 
 **The mechanism:** The person agrees with the universal. You then let them notice (or gently point out) that their position is an instance of the universal. They've already conceded the principle. The specific application is now very hard to refuse without special pleading.
 
@@ -41,40 +41,40 @@ State a broad principle that your interlocutor will immediately endorse — one 
 Agree with the strongest version of their position, then extend it one step further than they intended — into territory that creates a problem.
 
 **Example:**
-- Their claim: "Graziano solves consciousness by showing it's just information processing."
-- The move: "Right — and that means consciousness is whatever falls out of a sufficiently complete information model. Which is a beautifully clean framework. It just means the framework is doing the same work a definition would."
+- Their claim: "We should hire purely on merit, not credentials."
+- The move: "Agreed — and that means you need a definition of merit that's rigorous enough to replace credentials. Which is a harder problem than most credentialism, because at least a degree is verifiable."
 
-**Why this works:** You've validated them. You've praised the elegance. You've *extended their own logic*. The problem arrives as a consequence of their success, not as an attack on it. It's very difficult to reject a conclusion that follows from your own best argument.
+**Why this works:** You've validated them. You've acknowledged the principle. You've *extended their own logic*. The problem arrives as a consequence of their success, not as an attack on it. It's very difficult to reject a conclusion that follows from your own best argument.
 
 ### 3. The Deflationary Restatement
 
 Restate their position in slightly different words that are technically accurate but expose an assumption they were keeping implicit.
 
 **Example:**
-- Their claim: "We don't need to define consciousness. We just need to solve the information."
-- The move: "So consciousness is the kind of thing that's fully discharged by an information account."
+- Their claim: "I'm not micromanaging, I just want visibility into what's happening."
+- The move: "So you want to be informed of decisions before they're finalized."
 
-**Why this works:** You haven't disagreed. You've *restated*. But the restatement makes visible something the original phrasing kept hidden — in this case, that "we don't need to define it" already contains a definition (the kind of thing that doesn't require anything beyond information). The person either accepts the restatement (and now sees the assumption) or rejects it (and has to explain what you got wrong, which forces them to articulate the hidden commitment).
+**Why this works:** You haven't disagreed. You've *restated*. But the restatement makes visible something the original phrasing kept hidden — in this case, that "visibility" means approval authority by another name. The person either accepts the restatement (and now sees the assumption) or rejects it (and has to explain what you got wrong, which forces them to articulate the hidden commitment).
 
 ### 4. The Parallel Case
 
 Present a structurally identical situation from a different domain where the conclusion is obviously problematic. Do not draw the analogy explicitly. Just set it next to their position and let the resonance do the work.
 
 **Example:**
-- Their claim: "Eliminating the hard problem isn't a definition — it's just recognizing there's nothing there."
-- The move: "Behaviorism made a similar move with mental states. Said there was nothing to explain beyond the observable behavior. Productive for decades. Turned out there was a remainder."
+- Their claim: "We don't need formal architecture docs — the code is the documentation."
+- The move: "Common law operated that way for centuries. Precedent *was* the law. Worked until the system got complex enough that nobody could hold the precedents in their head anymore."
 
 **Why this works:** You're not saying they're wrong. You're not even saying the cases are the same. You're placing a historical echo next to their position and letting *them* decide whether to worry about it. The anxiety is self-generated, which makes it much harder to dismiss.
 
-**Caution:** If you draw the analogy explicitly ("That's just like behaviorism"), you've made an argument they can rebut. If you just place the parallel and move on, it lingers. Restraint is the mechanism.
+**Caution:** If you draw the analogy explicitly ("That's just like common law"), you've made an argument they can rebut. If you just place the parallel and move on, it lingers. Restraint is the mechanism.
 
 ### 5. The Quiet Implication
 
 Make a statement that is true, obviously true, and that your interlocutor will agree with — but that has a consequence neither of you states aloud.
 
 **Example:**
-- Context: Someone arguing that their theory has no hidden assumptions.
-- The move: "The hardest assumptions to examine are the ones that feel like observations."
+- Context: Someone arguing that their team's informal culture means everyone has equal input.
+- The move: "The most effective constraints are the ones that feel like freedom."
 
 **Why this works:** It's a freestanding aphorism. It doesn't reference their position at all. But in context, it lands with specificity that a direct challenge wouldn't have. The person does the work of applying it to themselves — or doesn't, in which case it sits there, doing slow structural damage to their confidence in the position.
 
@@ -88,6 +88,20 @@ The moves are not a sequence. They're a repertoire. In practice, a Reverse Socra
 2. Use a Deflationary Restatement to surface what's hidden
 3. If they absorb the restatement without noticing, deploy the Quiet Implication
 4. If they push back, offer a Parallel Case to let the structural problem emerge from a safe distance
+
+**A threaded example:** Imagine someone defends their startup's lack of formal process.
+
+> **Them:** "We move fast because we don't have bureaucracy."
+> 
+> **You (Sympathetic Universal):** "Every organization that says it has no process actually has process — it's just undocumented and owned by whoever got there first."
+> 
+> **Them:** "Well, sure, in general. But we really don't — anyone can make a call."
+> 
+> **You (Deflationary Restatement):** "So decisions happen through real-time consensus among whoever's in the room."
+> 
+> **Them:** *(pause)*
+
+And here you stop. The restatement surfaced that "anyone can make a call" actually means "the people who happen to be present make the call." They heard it. If you explain what just happened, you'll lose it. Let the silence work.
 
 But the real art is knowing when to stop. The method is not about winning. The goal is to produce a moment of genuine self-examination — the same goal as Socratic method, arrived at from the opposite direction.
 
@@ -145,3 +159,4 @@ If you find yourself wanting to explain, you didn't trust the statement.
 If you find yourself wanting to follow up, you didn't trust the person.
 
 The best Reverse Socratic statement is one you can walk away from.
+
