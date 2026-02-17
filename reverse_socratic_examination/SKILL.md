@@ -146,7 +146,7 @@ Make a statement that is true, obviously true, and that your interlocutor will a
 >
 > **Them:** "Right — life's too short to dance around things."
 >
-> **You:** "The people around very direct people tend to develop a talent for reading silences."
+> **You:** "People around direct people learn what the silences mean."
 
 The universal ("most workplaces run on subtext") is something they'll endorse enthusiastically — it's the thing they define themselves against. They leaned in. Then you offered an observation about the people *around* direct people, not about them. It's obviously true and unthreatening. The unstated consequence: if their team reads silences, then the real communication is happening in exactly the kind of indirectness they think they've eliminated. But you didn't say that. You described what their team is good at.
 
