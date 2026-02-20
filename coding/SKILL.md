@@ -23,17 +23,11 @@ Program close to the requirements.
 
 The functional paradigm is powerful, and OO lends good organization. Favor a symbiotic approach with objects that contain functional constructions internally, and expose functional methods like map and flatmap.
 
-## Shallow call chains
+## Structure Rules
 
-Use shallow call chains and pass returned artifacts from call to call.
-
-## Guard conditions
-
-Use guard conditions liberally to exit logic flows early and reduce nesting. Test for bad cases before happy path.
-
-## Granular functions
-
-Favor tight, granular functions over inlining and deep nesting.
+- Code **MUST** be factored for reuse and clarity.
+- Code **MUST NOT** be deeply nested. Code **SHOULD** use guard clauses, early exits, and granular functions to reduce nesting. Test for bad cases before the happy path.
+- Code **SHOULD** avoid deep call stacks. Code **SHOULD** pass intermediate results from function to function.
 
 ## Default parameters
 
@@ -48,10 +42,6 @@ Avoid optional parameters to a function or method. The signature should be the s
 ## Code Quality
 
 - Write clear, decoupled code with clear names and single responsibilities
-- Use guard clauses to handle edge cases early and reduce nesting
-- Keep functions small and granular — each does one thing well
-- Favor functional internals inside OO containers; expose `map`/`flatMap`-style methods
-- Use shallow call chains — pass returned artifacts call to call
 - Solve the specific problem first; do not over-engineer ahead of requirements
 
 ## Parameter Rules
