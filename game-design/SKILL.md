@@ -25,6 +25,15 @@ When designing a new game or a major new system, start by creating a **DYNAMICS.
 
 DYNAMICS.md is a living document. Update it when mechanics change. It is the authoritative reference for *why* the game works, not just *what* the game does.
 
+7. **Code-check every mechanic.** Every mechanic must be expressible as a clear algorithm — a turn loop step, a conditional check, a state mutation. If you can't describe it as pseudocode in 5 lines, it's too vague to implement. "Unique encounter" is not a mechanic. "If Hecto is on artifact hex AND Evascor within 3 hexes, spend 2 MP to claim" is. Prefer one code path that handles all cases over special-case branches per content item.
+8. **Template, don't snowflake.** When designing content that varies (artifacts, abilities, units), define a small set of mechanical templates first (passive modifier, activated-self, activated-targeted, one-use). Each content item is a parameter set for a template, not a unique code path. 20 artifacts should require ~4 templates and ~16 effect functions, not 20 bespoke implementations.
+9. **Write a Strategies section.** After mechanics are defined, enumerate the play patterns the design should support: early/mid/late game approaches, recurring tensions (trade-offs that come up every game), and anti-strategies (degenerate patterns the design must prevent). Review every strategy against the actual mechanics — if a strategy references a rule that doesn't exist, or if a mechanic has no strategy that uses it, something is wrong. This review frequently surfaces:
+   - Inconsistencies (a strategy assumes a rule that was never formalized)
+   - Missing rules (anti-strategy has no mechanical prevention)
+   - Dead mechanics (a feature no strategy ever engages with)
+   - Unfair asymmetries (an NPC that trivially dominates because its constraints weren't tested against player capabilities)
+10. **Source material is mechanics fuel, not mechanics.** When adapting fiction (stories, lore, IP), extract the *relationships and tensions* — not the plot beats. A character who "tricks the hero" becomes an NPC with an information asymmetry mechanic. A creature "too powerful to fight" becomes a puzzle with a non-combat solution. Map story dynamics to game dynamics; don't literalize scenes into special-case encounters.
+
 ---
 
 ## Why Is This Fun?
@@ -133,6 +142,20 @@ Design mechanics that layer on each other over time. Position, map knowledge, un
 
 *Example: Healing terrain + support aura + rest bonus stacking on one unit; clearing a corridor that enables a two-turn rift rush.*
 
+### Information as Currency
+
+Knowledge of the game state is itself a resource to design around. Hidden information (fog, unrevealed locations) creates exploration. Shared information (revealing something to a rival) creates races. Asymmetric information (one side knows what the other doesn't) creates tension. Design information mechanics with the same care as movement or combat — who knows what, when do they learn it, and what does it cost? *Serves: scarcity of agency (scouting costs actions), accumulation (map knowledge compounds), readable consequences (the player chose what to reveal).*
+
+*Example: Scrolls reveal artifact locations but also alert a rival NPC. Cryptic visions reveal locations privately but require interpretation. Two paths to the same goal with different information costs.*
+
+### Rival NPCs Need Constraints
+
+An NPC competitor (rival, thief, opposing force) must operate under rules the player can understand, predict, and counter. If a rival can go anywhere at any speed with perfect knowledge, it's not a challenge — it's a timer with legs. Give rivals: (a) information limits (they only know what's been revealed), (b) terrain costs (same movement rules as players), (c) commitment patterns (they lock onto a target and don't omnisciently switch), (d) at least one counterplay the player can execute at a real cost. Test the rival by asking: "Can the player ever outmaneuver this NPC, or just outrace it?" If the answer is only outrace, the rival needs more constraints. *Serves: readable consequences (player can predict rival behavior), scarcity of agency (counterplay costs something).*
+
+### State Must Fit in a Struct
+
+Every piece of game state must be a named field in a data structure. If a mechanic requires tracking something that doesn't have a home in the state model, either the mechanic is too vague or the state model is incomplete. Write the state model early — it exposes hidden complexity. A mechanic that needs 5 new fields is more expensive than one that reuses existing fields. *Serves: readable consequences (if you can't model it, you can't display it).*
+
 ### Never Let a Unit Feel Stuck
 
 Guarantee a minimum action even when costs would prevent it. If a rule blocks all options, the player loses agency — the one thing the game can't afford to take. *Serves: scarcity of agency (must preserve the feeling that scarce moves matter, not that you have zero moves).*
@@ -154,3 +177,16 @@ When a value feels wrong, adjust by 2x. Large swings test whether the *concept* 
 ### Name the Driver
 
 Before adding a mechanic, state which psychological driver it serves. The drivers are: scarcity of agency, readable consequences, near-miss architecture, variable reinforcement, guardianship, loss aversion, revenge, escalating commitment, accumulation and windfall, comedy. If you can't name one, reconsider.
+
+### Strategy Review Catches Bugs
+
+After writing the Strategies section, read each strategy as if you're an adversarial player trying to break the game. For every anti-strategy ("this shouldn't work"), verify the *specific mechanic* that prevents it. If the prevention is "it would be boring" or "it's suboptimal," that's not enough — degenerate strategies get used if they work, regardless of fun. Common bugs this catches:
+- NPC rivals with no information limits (omniscient = unfair)
+- NPC rivals with no terrain constraints (teleporting = unfair)
+- Anti-turtle pressure that doesn't exist mechanically (just saying "monsters escalate" isn't enough if the escalation is too slow)
+- Strategies that reference rules you forgot to formalize
+- Win conditions that conflict with the strategies needed to reach them (e.g., "both units must escape" but one strategy sends them in opposite directions)
+
+### Double-Edged Mechanics Are Gold
+
+The best mechanics serve two purposes that pull in opposite directions. A scroll that reveals a treasure *also* alerts your rival. Claiming an artifact *also* increases monster spawns. Splitting your units covers more ground *but* makes one vulnerable. When a single action has both upside and downside, the player faces a genuine decision every time. If a mechanic only has upside, it's not a decision — it's a chore. If it only has downside, it's not a decision — it's punishment.
