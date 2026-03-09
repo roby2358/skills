@@ -20,7 +20,8 @@ When designing a new game or a major new system, start by creating a **DYNAMICS.
 2. **Choose 2-3 key drivers** from the list below that the theme naturally activates. These are the load-bearing pillars. Every other mechanic weaves into them.
 3. **Design key mechanics** — one per driver. Each mechanic should be a single sentence. If it takes a paragraph to explain, it's too complex or it's actually two mechanics.
 4. **Weave secondary mechanics** into the key ones. Every new mechanic must connect to an existing one. If it stands alone, it's bloat. Ask: "What existing mechanic does this make more interesting?"
-5. **Name the driver** for every mechanic. If you can't, cut it.
+5. **Gut check every mechanic.** Does it satisfy common sense? If a player encounters it cold, will it feel intuitive or backwards? A mechanic that requires explanation is fighting the player's instincts. Fire should hurt, armor should protect, retreating to safety should heal. When a mechanic *must* defy intuition (e.g., sealing a rift makes remaining enemies stronger), the player needs to feel the logic immediately — otherwise it reads as a bug, not a design.
+6. **Name the driver** for every mechanic. If you can't, cut it.
 
 DYNAMICS.md is a living document. Update it when mechanics change. It is the authoritative reference for *why* the game works, not just *what* the game does.
 
