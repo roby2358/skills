@@ -190,3 +190,39 @@ After writing the Strategies section, read each strategy as if you're an adversa
 ### Double-Edged Mechanics Are Gold
 
 The best mechanics serve two purposes that pull in opposite directions. A scroll that reveals a treasure *also* alerts your rival. Claiming an artifact *also* increases monster spawns. Splitting your units covers more ground *but* makes one vulnerable. When a single action has both upside and downside, the player faces a genuine decision every time. If a mechanic only has upside, it's not a decision — it's a chore. If it only has downside, it's not a decision — it's punishment.
+
+### Bake Costs Into Systems, Don't Bolt Them On
+
+When an action has a cost, embed it in the system that governs the action — don't add a separate check. "Claiming costs 2 MP" becomes "+2 to the BFS movement cost of artifact hexes." The hex simply doesn't highlight if you can't afford it. No modal, no notification, no special case. The player learns the cost by seeing the reachable hexes. This principle scales: if entering a hex has a side effect, make it part of the movement calculation, not a post-move handler. Fewer code paths, fewer surprises, fewer bugs.
+
+### Shared Obstacles Create Emergent Alliances
+
+When a threat affects multiple actors (player units AND rival NPCs), the game board generates its own stories. Monsters that target both the player and Jhirle turn the monster swarm from a pure hazard into a tactical tool — the player's problem becomes the rival's roadblock. Design threats that don't discriminate. This is where comedy emerges: a monster spawn that accidentally blocks Jhirle from an artifact she was about to claim, or a monster chasing Jhirle into a dead end she has to detour around. *Serves: comedy, variable reinforcement, readable consequences.*
+
+### NPC Rivals Need the Same Return Trip
+
+If the player must go out and come back (collect objectives, return to base), the rival must too. A rival that only needs to *reach* an objective is just a timer — the player can never intercept or counterplay on the return. When both sides must make the round trip, the player can: (a) race to collect first, (b) block the return path, (c) use terrain and obstacles strategically. The return trip is where Evascor-blocking and monster-as-barrier tactics become viable. Without it, the rival is a clock you watch helplessly.
+
+### Pathfinding Needs Global Vision
+
+When an NPC uses pathfinding, use full A* to the target and walk the path within the MP budget. Do NOT use local BFS (limited by MP radius) to pick the "best reachable hex" — this creates a horizon problem where the NPC can't plan detours longer than one turn's movement. The NPC gets stuck on coastlines, behind obstacles, in dead ends. Full pathfinding, then walk. Always.
+
+### Ecology Over Choreography
+
+Design enemy behavior as a simple ecology (spawn, move, decay, hesitate) rather than scripted encounters. A few probabilistic rules — 20% spawn chance, 20% decay when distant, 50% hesitation near a strong unit — create emergent board states that feel alive and different every game. The player reads the "weather" of the board rather than solving a predetermined puzzle. Tune the rates through play: halve and double first, then find the feel. *Serves: variable reinforcement, near-miss architecture.*
+
+### Variable Speed Creates Dread
+
+Instead of uniform enemy movement, roll speed per enemy at spawn (e.g., 1d6: 1-3 = slow, 4-5 = fast, 6 = very fast). A swarm where any individual monster might be the fast one makes every spawn feel threatening, even when most are slow. The player can't rely on counting hexes to feel safe — a speed-3 monster closing from 4 hexes away is a surprise death. This is cheap to implement (one field per enemy, loop the greedy-move step N times) and dramatically changes the feel of the threat. *Serves: variable reinforcement, near-miss architecture, readable consequences (the player sees the fast one coming and must react).*
+
+### Death Should Be an Event, Not a State Check
+
+Don't check "is the player in a bad position at end of turn" — let the bad thing actually *happen* on screen. A monster that moves onto the player's hex and kills them is dramatic. A post-turn check that says "you were adjacent to a monster and too far from safety" is a rule violation notice. When death is an active event in the enemy movement phase, the player sees it coming, watches it unfold, and knows exactly which monster and which decision killed them. This also opens design space for protection mechanics: the guardian unit's proximity makes the hex *impassable* to enemies, which is a spatial mechanic the player can reason about visually. *Serves: readable consequences (cause and effect are visible), revenge (the player saw who did it), near-miss architecture (the monster was one hex away — next time, stay closer).*
+
+### Animate the Enemy Phase
+
+The enemy phase is where consequences land — don't skip it. A combat flash when the guardian kills monsters, hop-by-hop movement so the player can track each enemy's advance, a death bang when something goes wrong. These animations serve three purposes: (1) they give the player time to *read* what happened, (2) they make enemy actions feel like real events rather than instant state changes, and (3) they create tension as fast enemies close distance in visible steps. Implementation: split the turn resolution into phases connected by animation callbacks (combat flash → monster movement hops → post-movement checks). Each phase renders, animates, then calls the next. Keep animations short (200ms per hop, 20 frames for a flash) — the goal is readability, not spectacle.
+
+### Home Bases Give the Map Emotional Weight
+
+A named location the player starts from and must return to transforms the map from a search space into a journey. "Go into the wilds, find treasure, come home" is a story. "Collect 3 things and step on an edge hex" is a rule. The mechanical difference is trivial (check city hex vs. check edge hex), but the emotional difference is enormous. Cities, towers, camps — any landmark that says "you belong here" makes the departure feel brave and the return feel earned. *Serves: guardianship, landmarks as anchors.*
