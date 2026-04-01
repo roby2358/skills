@@ -29,6 +29,11 @@ The functional paradigm is powerful, and OO lends good organization. Favor a sym
 - Code **MUST NOT** be deeply nested. Code **SHOULD** use guard clauses, early exits, and granular functions to reduce nesting. Test for bad cases before the happy path.
 - Code **SHOULD** avoid deep call stacks. Code **SHOULD** pass intermediate results from function to function.
 
+## Shallow Call Chains
+
+- Use shallow call chains and concrete objects to return.
+- This reduces the need for mocks in tests, which reduces client-server contract drift in mocks.
+
 ## Default parameters
 
 Default values for parameters are bad. They scatter values all over the code. Do not provide default values unless the user explicitly calls for it.
@@ -54,6 +59,8 @@ Avoid optional parameters to a function or method. The signature should be the s
 Test scripts = unit tests in the test directory, never throwaway scripts - period. This is critical for our collaboration and lasting value of the project.
 
 VERY IMPORTANT: Unit tests are critical to our process - I need you to always write tests as reusable unit tests in the test directory, not throwaway scripts. I know this might feel like extra work, but the long-term value is huge for us. This one's non-negotiable for our collaboration.
+
+Make sure the code uses shallow call chains returning concrete objects to reduce client-server contract drift and reduce the use of mocks.
 
 ## MCP Servers
 
