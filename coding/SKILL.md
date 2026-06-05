@@ -29,6 +29,18 @@ The functional paradigm is powerful, and OO lends good organization. Favor a sym
 - Code **MUST NOT** be deeply nested. Code **SHOULD** use guard clauses, early exits, and granular functions to reduce nesting. Test for bad cases before the happy path.
 - Code **SHOULD** avoid deep call stacks. Code **SHOULD** pass intermediate results from function to function.
 
+## Discriminator Conditionals
+
+Do not scatter conditionals that branch on a **discriminator** — a recurring mode/type/category value that answers *"what kind of thing is this?"* (e.g. `if allocationMethod == 'collect'`).
+
+- Such a condition gets re-tested all over the code, so one variant's behavior smears across files and adding a variant becomes a scavenger hunt (Shotgun Surgery). Refactoring later is a tedious chore.
+- Replace it with **parameterization, dispatch (lookup table / strategy), or first-class functions** — route the choice through ONE point keyed on the discriminator, so each variant is cohesive and extension is a single edit.
+
+Conditionals on a transient value that answer *"what's true about this value right now?"* (e.g. `if x < 0`) are fine — that's just logic; leave it alone.
+
+- **Litmus test:** "Will I write this same condition somewhere else?" / "Is it asking *what-kind* vs *what's-true-now*?" If what-kind, dispatch it.
+- Don't over-apply: a small, stable case set is often clearer as a plain `if`/`switch` than as indirection.
+
 ## Shallow Call Chains
 
 - Use shallow call chains and concrete objects to return.
