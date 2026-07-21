@@ -7,8 +7,6 @@ description: Project-specific coding conventions and constraints. Use when writi
 
 ## Two-Pass Process
 
-In the first pass keep reuse and clarity top of mind.
-
 Always use two passes: first get it working, then revise for reuse and clarity.
 
 Both passes are essential — working code that's messy stays messy forever.
@@ -66,15 +64,35 @@ Avoid optional parameters to a function or method. The signature should be the s
 - **No default parameter values.** Fail fast on missing values. Never provide inline defaults unless explicitly requested.
 - **No optional parameters.** The signature is the signature.
 
+## Web Applications
+
+The default preference is to write browser applications as html, css and js using script tags instead of ES modules so the user can double-click to launch the app.
+
+If a project is already using ES modules, or I request it, then continue doing it that way. Don't change from one to the other without prompting.
+
+## Migrations
+
+In prototypes and early development, do not add migration or code versioning, since it's only the user. Instead, inform the user of changes that will break stored state.
+
+Introduce migrations and versioning only after requested.
+
 ## Testing
 
-Test scripts = unit tests in the test directory, never throwaway scripts - period. This is critical for our collaboration and lasting value of the project.
+NOTE: Some projects do not need tests at all, such as prototypes, games or generative art
 
-VERY IMPORTANT: Unit tests are critical to our process - I need you to always write tests as reusable unit tests in the test directory, not throwaway scripts. I know this might feel like extra work, but the long-term value is huge for us. This one's non-negotiable for our collaboration.
+Test scripts = When testing, never write throwaway scripts, use unit tests in the test directory - period. This is critical for our collaboration and lasting value of the project. The no throwaway tests is true even for prototypes that don't need tests (MAY write unit tests)
+
+VERY IMPORTANT: When warranted, unit tests are critical to our process - I need you to always write tests as reusable unit tests in the test directory, not throwaway scripts. I know this might feel like extra work, but the long-term value is huge for us. This one's non-negotiable for our collaboration.
+
+If you write small scripts for reuse, create a skill local to the project to remind yourself they are available.
 
 Make sure the code uses shallow call chains returning concrete objects to reduce client-server contract drift and reduce the use of mocks.
 
 ## MCP Servers
 
 - Default to stdio transport
-- Python MCP servers: use `from mcp.server.fastmcp import FastMCP` (https://github.com/jlowin/fastmcp)
+- Python MCP servers: use `from mcp.server.fastmcp import FastMCP` ((https://github.com/modelcontextprotocol/python-sdk))
+
+## Tokens
+
+Fable tokens are precious! Craft project-local scripts and skills for repetitive tasks
