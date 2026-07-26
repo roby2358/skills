@@ -17,6 +17,10 @@ Keep it simple. Focus on solving the specific problem first - we can collaborate
 
 Program close to the requirements.
 
+## Structure
+
+Identify central ideas and abstractions, and structure the code around those. Identify cross-cutting concerns that should be centralized. Factor these out for consistency, correctness, reuse, and clarity.
+
 ## Functional / OO
 
 The functional paradigm is powerful, and OO lends good organization. Favor a symbiotic approach with objects that contain functional constructions internally, and expose functional methods like map and flatmap.
