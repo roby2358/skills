@@ -42,9 +42,11 @@ If both exist, ONTOLOGY wins; treat SPEC.md as legacy and say so.
 ## Step 2: Core + tests, no UI
 
 - Implement the rules/engine as DOM-free code with seeded randomness, so runs reproduce.
-- Write the automated test (e.g. `test/smoke.js`) by transcribing the criteria tables.
-  **Label each assertion with its criterion ID** (`R-12 …`), and make the test **fail if any
-  criterion ID in the doc has no labeled assertion**.
+- Write the automated tests by transcribing the criteria tables. With a SPEC.md, label each
+  assertion with its criterion ID (`R-12 …`) and fail if any ID has no labeled assertion.
+  With the design-doc set, follow ontology_spec's CRITERIA layout: each `automated` R-row's
+  tests live in `test/R-n/`, one rule per test, plus the coverage test over the Instrument
+  column.
 - Run the tests until they pass before touching UI.
 
 ## Step 3: Measure before claiming (games and simulations)
@@ -87,10 +89,10 @@ Skip this step for apps with no balance or emergent behavior.
 - **SPEC format:** update SPEC.md with features, error handling, and UI details that
   emerged, following the `specification` skill.
 - **Design-doc format:** for every rule or number that changed, update ONTOLOGY (the rule),
-  RATIONALE (why, with Evidence), CRITERIA (the check and its status), and the test
-  assertion **together**. Refer to constants by name where possible, not by value; the code
-  constant is the one source. Add an ARCHITECTURE_LOG entry for each structural change (one
-  line each).
+  RATIONALE (why, with Evidence), CRITERIA (the check and its status), and the tests in
+  `test/R-n/` **together**. Refer to constants by name where possible, not by value; the code
+  constant is the one source. Add a dated ARCHITECTURE_LOG entry (newest first) for each
+  structural or design change; the other docs stay current-state only.
 - Update CLAUDE.md / README run instructions for any new test or tool.
 
 ## Step 6: Report
