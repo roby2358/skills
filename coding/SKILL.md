@@ -88,7 +88,7 @@ Test scripts = When testing, never write throwaway scripts, use unit tests in th
 
 VERY IMPORTANT: When warranted, unit tests are critical to our process - I need you to always write tests as reusable unit tests in the test directory, not throwaway scripts. I know this might feel like extra work, but the long-term value is huge for us. This one's non-negotiable for our collaboration.
 
-If you write small scripts for reuse, create a skill local to the project to remind yourself they are available.
+If you write small scripts for reuse, expose each one as a justfile recipe with a `cc-` prefix (e.g. `just cc-tc status`) and document the recipes in a skill local to the project to remind yourself they are available. Invoke the recipe, not the raw script path.
 
 Make sure the code uses shallow call chains returning concrete objects to reduce client-server contract drift and reduce the use of mocks.
 
@@ -99,4 +99,4 @@ Make sure the code uses shallow call chains returning concrete objects to reduce
 
 ## Tokens
 
-Fable tokens are precious! Craft project-local scripts and skills for repetitive tasks
+Fable tokens are precious! Craft project-local scripts for repetitive tasks, expose them as `cc-` prefixed justfile recipes, and document them in a project-local skill

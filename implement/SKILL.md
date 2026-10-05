@@ -1,47 +1,108 @@
 ---
 name: implement
-description: Implement an app from SPEC.md, then review JS, CSS, and update the spec. Use after creating or updating a SPEC.md file.
+description: Implement an app from its design docs, either a SPEC.md or the ONTOLOGY.md + CRITERIA.md set (with DYNAMICS and RATIONALE), in order (contract, then headless core and tests, then tuning, then UI), then review JS and CSS and reconcile the docs. Use after creating or updating a SPEC.md or ONTOLOGY.md.
 ---
 
 # Implement Workflow
 
-When the user invokes this skill, run four subagent tasks for the specified app directory.
+Build an app from its design documents in a fixed order: contract and tests first, then the
+headless core, then measured tuning, then UI, then reviews and doc reconciliation. Use
+subagents for the review tasks.
 
 ## Required Input
 
-The user must provide an app path (e.g., `balance`, `description`, or a full path).
+An app path (e.g. `balance`, `survive`, or a full path).
 
-## Workflow
+## Step 0: Find the spec format
 
-Launch these tasks in sequence (implementation first, then reviews in parallel):
+Look in the app directory:
 
-### Task 1: Implement
+| Found | Format | Implementation reference | Checks come from | "Why" lives in |
+|---|---|---|---|---|
+| `ONTOLOGY.md` | **Design-doc set** | ONTOLOGY (§0 purpose / goals / priorities / non-goals, then entities, state, rules as pseudocode, commands and events, numbers) | CRITERIA (R-* rule tables, U-* UI checks, X-* playtest criteria) | RATIONALE (D-* decisions, Q-* open questions); DYNAMICS for intent; ONTOLOGY §0 (or a legacy TELOS.md) breaks ties |
+| `SPEC.md` only | **SPEC** | SPEC.md | SPEC's acceptance / examples sections, or derived from its rules | SPEC's notes, if any |
+| Neither | Stop | Ask the user to write a spec first (`specification` or `game-design` skill) | | |
 
-Implement the app according to its SPEC.md. Use the description app as a template for:
-- HTML structure (index.html)
-- CSS styling patterns (index.css) - CSS variables, dark theme, .box component
-- JS patterns (index.js) - $.yuwakisa.[AppName] constructor pattern
+If both exist, ONTOLOGY wins; treat SPEC.md as legacy and say so.
 
-### Tasks 2-4: Reviews (run in parallel after Task 1)
+## Step 1: Pre-flight (do not write code yet)
 
-**Task 2: Review JS for clarity**
-- Follow coding standards from .skills/coding/SKILL.md
-- Look for redundant code, unclear naming, missing guard conditions
-- Make edits to improve
+- **Open questions.** Read RATIONALE's Q-* list (or SPEC's open questions). If any are
+  unanswered and block a rule, batch them to the user in one message and stop.
+- **Provenance.** Treat items tagged **[P]** (proposed by Claude) as provisional and
+  **[T]** as tunable. Never promote a guess to a rule silently. In a SPEC, note assumptions
+  you make in the final report.
+- **Contract.** Check that the spec defines the command/action interface and the
+  events/results it returns (ONTOLOGY "Commands and events" section, or SPEC API section).
+  If it's missing, write it into the spec now, before the engine. It is the API between
+  core and UI and the thing that lets the UI animate.
+- **Checks.** Check that every rule has a test case written as input → expect. If CRITERIA
+  (or SPEC) lacks them, add them now, next to the rule they check.
 
-**Task 3: Review and clean CSS**
-- Compare against description/index.css reference
-- Remove unused rules, redundant properties
-- Ensure consistent variable usage
+## Step 2: Core + tests, no UI
 
-**Task 4: Update SPEC.md**
-- Review implementation and update spec with any changes
-- Follow specification skill guidelines
-- Document features, error handling, UI details that emerged
+- Implement the rules/engine as DOM-free code with seeded randomness, so runs reproduce.
+- Write the automated test (e.g. `test/smoke.js`) by transcribing the criteria tables.
+  **Label each assertion with its criterion ID** (`R-12 …`), and make the test **fail if any
+  criterion ID in the doc has no labeled assertion**.
+- Run the tests until they pass before touching UI.
+
+## Step 3: Measure before claiming (games and simulations)
+
+Skip this step for apps with no balance or emergent behavior.
+
+- Build a self-play / soak harness as a **committed tool** (e.g. `tools/tune.js`) that
+  accepts config overrides on the command line and prints the metrics the X-* criteria name.
+  Don't leave it in a scratch directory.
+- Tune by comparing configurations, **one variable at a time**. A changed number is
+  attributed only by a controlled comparison.
+- Record each tuning decision in RATIONALE with an **Evidence** line: `Measured by: <command>
+  → <result>` or `Modeled by: <sim> (unverified in play)`. Never state a modeled number as
+  fact.
+
+## Step 4: UI
+
+- Build the client on the command/event contract; the UI never reaches past it into rules.
+- Templates: follow the app's existing base or fork (e.g. a game forked from
+  `hexandcounter`: plain-script globals, State / Engine / Board / UI split). Otherwise, use
+  the `description` app for HTML structure (`index.html`), CSS patterns (`index.css`: CSS
+  variables, dark theme, `.box`), and JS patterns (`index.js`: `$.yuwakisa.[AppName]`
+  constructor).
+- Verify with a **committed browser script** (e.g. `test/browser.js`, Playwright) that loads
+  a seeded page (`?seed=N`), walks every screen against the U-* criteria, saves
+  screenshots, and fails on console errors. Look at the screenshots.
+
+## Step 5: Reviews (run in parallel subagents after Step 4)
+
+**Task A: Review JS for clarity**
+- Follow coding standards from the `coding` skill.
+- Look for redundant code, unclear naming, missing guard conditions. Make edits.
+- Re-run the tests afterwards.
+
+**Task B: Review and clean CSS**
+- Compare against the app's base, or `description/index.css`.
+- Remove unused rules and redundant properties; ensure consistent variable usage.
+
+**Task C: Reconcile the docs with the code**
+- **SPEC format:** update SPEC.md with features, error handling, and UI details that
+  emerged, following the `specification` skill.
+- **Design-doc format:** for every rule or number that changed, update ONTOLOGY (the rule),
+  RATIONALE (why, with Evidence), CRITERIA (the check and its status), and the test
+  assertion **together**. Refer to constants by name where possible, not by value; the code
+  constant is the one source. Add an ARCHITECTURE_LOG entry for each structural change (one
+  line each).
+- Update CLAUDE.md / README run instructions for any new test or tool.
+
+## Step 6: Report
+
+- Tests and browser checks passed or failed, with counts.
+- Tuning results and what was measured vs. modeled.
+- Assumptions made ([P] items and SPEC gaps) for the user to confirm.
+- The X-* criteria no instrument can check, phrased as **human playtest questions**.
 
 ## Example Usage
 
 ```
 /implement balance
-/implement prompter
+/implement survive
 ```
