@@ -49,6 +49,8 @@ of the implementation reference. Don't write a separate TELOS file.
 - **[D]** decided by the designer (the user). Only the user can make something [D].
 - **[P]** proposed by Claude, pending review. Never silently promote a [P] to a rule.
 - **[T]** tunable number, expected to change under measurement or playtest.
+- **[D, unbuilt]** decided but not yet in the code. Keep it in ONTOLOGY so the design stays in the
+  reference, and give it a `not yet covered` CRITERIA row so the gap is visible.
 - **Serves:** what an entity or rule exists *for* — a §0 goal (G-1…), a §0 feeling/quality,
   or a DYNAMICS driver. An item that serves nothing is a candidate for cutting; a goal that
   nothing serves is unmet.
@@ -65,6 +67,12 @@ doc is reorganized, and every `§4.3` back-reference silently breaks — a long 
 accumulate hundreds. Inside the doc set, prefer naming the target ("the OTT consume rule")
 over `§4.1`; a CRITERIA row that cites ONTOLOGY by section number has the same fragility,
 so if you use them, sweep them whenever ONTOLOGY's sections move.
+
+**Separate apps keep separate namespaces.** When two apps in one repo each have a doc set, each
+uses plain `D-n`/`R-n` for itself and always qualifies the other's ("auth/ D-9"). Neither app's
+docs or tests reach into the other's tree: a contract one app publishes (a token format, a
+consumer-side check) is stated generically there, and each side tests its own implementation of
+it under its own IDs.
 
 ---
 
@@ -170,6 +178,10 @@ A criterion with no instrument is a wish — mark it `not yet covered` rather th
   shared setup moved to a helpers directory. A happy-path walkthrough that touches many
   rules is an integration test and lives outside the `R-n` directories.
 - Tests that check no rule stay in ordinary `unit/` / `integration/` directories.
+- **Several packages or workspaces:** a rule's tests live in `<package>/test/R-n/` in the package
+  that owns the code, and the coverage test scans every package. Put the coverage test in a
+  package that already has filesystem access (a Node-only tool or dev package); don't add
+  Node types to a package that runtime code imports just to host it.
 - A **coverage test** runs with the suite and fails when an `automated` row has no
   `test/R-n/` with a test in it, when a `test/R-n/` exists for a row that is missing or not
   `automated`, or when an Instrument cell isn't one of the four forms.
@@ -271,18 +283,28 @@ When the project already has a SPEC.md (or several), the job is translation, not
 2. **Code wins.** Specs drift. Where spec and code disagree, ONTOLOGY describes the code,
    and each discrepancy goes in a list for the user (and, once accepted, in the log) — never
    silently "fixed" in either direction.
-3. **Tag honestly.** Shipped behavior the user designed is [D]. Claude's inferences, gap
-   fills and proposed fixes are [P]. Number constants found in code are [T] with their code
-   names.
+3. **Tag honestly.** Shipped behavior the user designed is [D]. Designed but never built is
+   [D, unbuilt]. Claude's inferences, gap fills and proposed fixes are [P]. Number constants
+   found in code are [T] with their code names.
 4. **Batch the questions.** Discrepancies the user should rule on and gaps worth fixing
-   become Q-items, sent in one message with recommendations.
+   become Q-items, sent in one message with recommendations. Bugs the mapping uncovers
+   become tracker tickets right away; the Q-item names the behavior, the ticket holds the fix.
+   Recheck open tickets against the code too: some will already be done or half done.
 5. **Sweep the back-references.** Find every citation of the old spec's sections in code,
    tests, docs and open tracker tickets and rewrite it to a stable ID. Leave closed/done
    tracker history alone — it's a record of its time.
 6. **Retire the old spec** in the same change, with a log entry saying what replaced it.
+   Content with no home in the new set goes where its reader is (repo layout → README; cost
+   posture → a RATIONALE decision), not into a fifth doc.
+7. **Start ARCHITECTURE_LOG with the docs, not at the end.** Its first entry lists every
+   place the old spec disagreed with the code; earlier dated entries can be reconstructed from
+   `git log` and the old spec's own history notes. Then the new docs carry no history from the
+   first commit.
 
-**Work in small committable slices**, each one green: docs → back-reference sweep → test
-reorganization into `R-n` directories → log. Fixes the conversion discovers (bugs, coverage
+**Work in small committable slices**, each one green: map (no edits; review it with the user)
+→ docs + log → back-reference sweep and retiring the old spec → test reorganization into
+`R-n` directories with the coverage test → history cleanup in any remaining docs (READMEs,
+CLAUDE.md). Fixes the conversion discovers (bugs, coverage
 gaps, open questions the user settles) become **tracker tickets**, not part of the
 conversion — it is tempting to fix everything at once and end with one unreviewable change.
 
