@@ -46,22 +46,25 @@ These dynamics must consider cost of materials, process costs, risks, and reward
 A game may pull one of these threads to the front — its dominant mechanic, the one the player is really playing. Promote *defense* and you have tower defense; promote *diplomacy* and the combat, trading, and reputation below it become the leverage you bring to the table. Or it may weave the activities into a tapestry.
 
 - gathering
-- crafting
 - hunting
+- building
+- farming
+- mining
+- crafting
+- trading
+- repair
+- revival
+- reputation
 - healing
 - creativity and expression
 - exploration
-- storytelling and ritual
+- discovery
+- storytelling
+- ritual
 - territory
 - combat
 - defense
 - diplomacy
-- building
-- repair
-- trading
-- farming
-- mining
-- reputation
 - prestige
 - influence
 - command
