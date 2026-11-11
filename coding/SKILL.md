@@ -21,6 +21,8 @@ Program close to the requirements.
 
 Identify central ideas and abstractions, and structure the code around those. Identify cross-cutting concerns that should be centralized. Factor these out for consistency, correctness, reuse, and clarity.
 
+Look for opportunities to express logic as a state machine (see State Machines below).
+
 ## Functional / OO
 
 The functional paradigm is powerful, and OO lends good organization. Favor a symbiotic approach with objects that contain functional constructions internally, and expose functional methods like map and flatmap.
@@ -42,6 +44,18 @@ Conditionals on a transient value that answer *"what's true about this value rig
 
 - **Litmus test:** "Will I write this same condition somewhere else?" / "Is it asking *what-kind* vs *what's-true-now*?" If what-kind, dispatch it.
 - Don't over-apply: a small, stable case set is often clearer as a plain `if`/`switch` than as indirection.
+
+## State Machines
+
+Use a state machine when behavior depends on what has happened before. Common signs are several boolean flags that are checked together, a mode variable, or the same input handled differently at different times.
+
+- Name each state. Keep the current state in one field.
+- Write the transitions as a table that maps (state, event) to the next state and an action.
+- Handle each event in one place, by looking up the current state in the table.
+- An event that has no entry for the current state is ignored or rejected. Decide which, and do it the same way everywhere.
+- Keep the table as data so it can be read, tested and drawn as a diagram.
+
+Leave simple logic alone. Two states and one transition are usually clearer as a plain `if`.
 
 ## Shallow Call Chains
 
