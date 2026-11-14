@@ -1,7 +1,6 @@
 # Ship checklist
 
-Each item: id, tier (T1 / T2 / T3), what to check, and how the gap usually shows up.
-Tiers are defaults; move one when the game's shape calls for it and say so.
+Each item: id, default tier (T1 / T2 / T3), what to check, and how the gap usually shows up.
 
 ## Contents
 
@@ -27,46 +26,45 @@ Tiers are defaults; move one when the game's shape calls for it and say so.
 
 | Id | Tier | Check |
 |---|---|---|
-| MENU-1 | T1 | **Title screen.** The game does not start mid-action on page load. Shows the name and one obvious way to begin. Doubles as the user gesture that unlocks audio. |
+| MENU-1 | T1 | **Title screen.** The game does not start mid-action on page load. Shows the name and one obvious way to begin. Its click or keypress doubles as the gesture that unlocks audio (AUD-1). |
 | MENU-2 | T1 | **End states exist and are reachable.** Win and lose each land on a screen that says what happened. No silent freeze, no `alert()`. |
-| MENU-3 | T1 | **Restart without reloading the page.** New game from the end screen and from the pause menu, with all state reset (check for module-level leftovers: timers, listeners, RNG, selections). |
-| MENU-4 | T2 | **Pause.** Esc or a visible button; real-time games stop the clock. Pause menu offers resume, settings, how to play, quit to title. |
+| MENU-3 | T1 | **Restart without reloading the page.** New game from the end screen (and the pause menu, where there is one), with all state reset: check for module-level leftovers such as timers, listeners, RNG, selections. |
+| MENU-4 | T2 | **Pause.** Esc or a visible button; real-time games stop the clock and quiet the audio. Pause menu offers resume, settings, how to play, quit to title. |
 | MENU-5 | T2 | **Continue vs New Game** on the title when a save exists; New Game confirms before overwriting. |
 | MENU-6 | T2 | **End screen has a payoff.** A summary of the run (turns, score, what killed you), not only "You win". Offers play again. |
-| MENU-7 | T2 | **Auto-pause on blur.** Tab hidden or window unfocused pauses real-time play and mutes or ducks audio (`visibilitychange`). |
-| MENU-8 | T2 | **Credits reachable from the title.** See LEGAL. |
-| MENU-9 | T3 | **Difficulty or mode select**, if the design supports it, with the default clearly marked. |
-| MENU-10 | T3 | **Every menu is keyboard navigable** and Esc always backs out one level. |
+| MENU-7 | T2 | **Auto-pause when hidden.** On `visibilitychange` or window blur, real-time play pauses and audio mutes or ducks. Coming back does not apply one huge time step (clamp the frame delta). |
 
 ## SAVE: save and resume
 
-Skip to `n/a` only if a full session is a few minutes and nothing carries over.
+If a full session is a few minutes and nothing carries over, the progress items are
+`n/a`. SAVE-2, SAVE-5, and SAVE-6 still apply to anything stored, such as settings.
 
 | Id | Tier | Check |
 |---|---|---|
 | SAVE-1 | T1 | **Progress survives a reload.** Autosave at safe points (turn end, level end). Closing the tab mid-run does not lose more than the current turn or level. |
-| SAVE-2 | T1 | **Storage failure is survivable.** Every storage read and write is in try/catch. With storage blocked (private window, third-party iframe on a portal) the game still plays and says saving is unavailable. |
+| SAVE-2 | T1 | **Storage failure is survivable.** Every storage access is in try/catch, including the first touch of `window.localStorage`, which itself throws when site data is blocked; writes can also fail on quota. The game still plays and says saving is unavailable. |
 | SAVE-3 | T1 | **Corrupt or foreign save does not brick the game.** Bad JSON or an unexpected shape falls back to a new game, not a blank page that persists across reloads. |
 | SAVE-4 | T2 | **Save format is versioned.** A `version` field, and a decision per version bump: migrate or discard with a message. Shipping an update must not crash returning players. |
-| SAVE-5 | T2 | **Storage keys are namespaced per game** (`gamename.save.v1`). Several games on one origin (own site, or a portal CDN) must not read each other's keys. |
+| SAVE-5 | T2 | **Storage keys are namespaced per game** (`gamename.save.v1`), and nothing calls `localStorage.clear()`. Several games on one origin (own site, or a portal CDN) must not read or wipe each other's keys. |
 | SAVE-6 | T2 | **Settings are saved separately from progress**, so New Game does not reset volume. |
-| SAVE-7 | T2 | **Player can wipe their data.** A reset-progress control with a confirm. |
+| SAVE-7 | T2 | **Player can wipe their data.** A reset-progress control with a confirm, removing this game's keys only. |
 | SAVE-8 | T2 | **Seed is saved with the run** when the game uses seeded RNG, so resume is the same world and a bug report is reproducible. |
 | SAVE-9 | T3 | **Export / import save** as text or file, for moving between browsers and for bug reports. |
 | SAVE-10 | T3 | **Multi-tab safety.** Two tabs do not silently clobber each other's save. |
 
 ## AUD: audio
 
+A game with no audio marks AUD-1, 2, 4, 6, 7 `n/a`; AUD-3 still applies.
+
 | Id | Tier | Check |
 |---|---|---|
-| AUD-1 | T1 | **No audio before a user gesture.** Browsers block it; the failure mode is a console error and silence for the whole session. Start or resume the audio context on the title-screen click. |
+| AUD-1 | T1 | **Audio starts from a user gesture.** Before a click or keypress an `AudioContext` sits suspended and `audio.play()` rejects. Create or `resume()` the context in the title-screen handler and catch `play()` rejections; otherwise the session is silent, or sound starts late on some random later click. |
 | AUD-2 | T1 | **Mute is one action away** during play, and it persists. |
 | AUD-3 | T2 | **The game has sound at all.** Feedback sounds on the core actions (select, move, hit, fail, win, lose). Silence reads as unfinished. If silent by design, say so in SHIP.md. |
-| AUD-4 | T2 | **Separate music and effects volume**, persisted. |
+| AUD-4 | T2 | **Volume control**, persisted; music and effects separately when the game has both. |
 | AUD-5 | T2 | **Nothing is carried by sound alone.** Every audio cue has a visual one; many portal players have the tab muted. |
-| AUD-6 | T2 | **Levels are balanced.** No effect that clips or is far louder than the rest; rapid repeats (many hits in one frame) do not stack into a blast. Needs a human ear: mark `unverified` if not listened to. |
+| AUD-6 | T2 | **Levels are balanced.** No effect that clips or is far louder than the rest; rapid repeats (many hits in one frame) do not stack into a blast. Needs a human ear: `unverified` if not listened to. |
 | AUD-7 | T2 | **Music loops cleanly** and does not restart on every screen change. |
-| AUD-8 | T3 | **Audio stops or ducks when paused** and on tab hide. |
 
 ## SET: settings
 
@@ -74,11 +72,10 @@ Skip to `n/a` only if a full session is a few minutes and nothing carries over.
 |---|---|---|
 | SET-1 | T2 | **A settings screen exists**, reachable from title and pause, and every setting persists. |
 | SET-2 | T2 | **Fullscreen toggle**, with the layout holding up in fullscreen. On portals the frame is small and this is the main fix. |
-| SET-3 | T2 | **Speed controls** where the game has animation or AI turns the player waits through: faster animations or skip. |
+| SET-3 | T2 | **Speed controls** where the player waits through animation or AI turns: faster animations or skip. |
 | SET-4 | T2 | **Reduced motion.** Screen shake and flashes can be turned off, and default off under `prefers-reduced-motion`. |
 | SET-5 | T3 | **Key remapping**, or at least alternates (WASD and arrows). |
-| SET-6 | T3 | **Colorblind-safe option** when color carries game state (teams, terrain, danger). |
-| SET-7 | T3 | **UI scale / text size.** |
+| SET-6 | T3 | **UI scale / text size.** |
 
 ## ONB: onboarding and rules
 
@@ -91,7 +88,7 @@ Skip to `n/a` only if a full session is a few minutes and nothing carries over.
 | ONB-5 | T2 | **Teach by doing, in order.** The first level or first turns introduce mechanics one at a time. A wall of text before play does not count. |
 | ONB-6 | T2 | **Everything on the board can be inspected.** Hover or click a unit, tile, icon, or status and learn what it is and what it does. |
 | ONB-7 | T2 | **Consequences are previewed.** Damage, movement range, and cost are shown before commit; irreversible actions confirm or can be undone. |
-| ONB-8 | T2 | **Failure explains itself.** A rejected action says why ("not enough MP"), and a loss says what caused it. |
+| ONB-8 | T2 | **A rejected action says why** ("not enough MP") instead of doing nothing. |
 | ONB-9 | T2 | **Hints do not nag returning players.** First-run tips are remembered as seen and can be replayed. |
 | ONB-10 | T3 | **A soft first loss.** The opening is hard to lose in the first couple of minutes. |
 
@@ -102,29 +99,27 @@ kindly, since portals and shared links send a lot of them.
 
 | Id | Tier | Check |
 |---|---|---|
-| MOB-1 | T1 | **A sorry screen exists.** On a device that cannot play, the visitor sees a designed screen instead of a broken or microscopic game. |
-| MOB-2 | T1 | **Detect by capability, not user agent.** Key on `matchMedia('(pointer: coarse)')` with `(hover: none)`, plus viewport size. Do not exclude touch laptops or a tablet with a mouse and keyboard attached. |
-| MOB-3 | T1 | **There is a way past it.** A "try anyway" control; detection is never perfect and a hard block is worse than a rough experience. |
+| MOB-1 | T1 | **A sorry screen exists.** On a device that cannot play, the visitor sees a designed, readable screen instead of a broken or microscopic game. Needs `<meta name="viewport" content="width=device-width, initial-scale=1">`; without it a phone reports a ~980px viewport, the screen is tiny, and size checks lie. |
+| MOB-2 | T1 | **Detect by capability, not user agent.** Show it when the primary input is touch, `matchMedia('(hover: none) and (pointer: coarse)')`, and no fine pointer is attached (`(any-pointer: fine)` is false). Treat a narrow viewport as a hint only. Not `navigator.userAgent`, and not `ontouchstart` or `maxTouchPoints`, which also match touch laptops. |
+| MOB-3 | T1 | **There is a way past it.** A "try anyway" control; a keyboard cannot be detected at all, and a hard block is worse than a rough experience. |
 | MOB-4 | T2 | **The screen sells the game.** Name, a screenshot or short loop, one line on what it is, and "built for mouse and keyboard" stated plainly. No apology spiral. |
-| MOB-5 | T2 | **It helps them come back on a computer.** Copy-link or share (Web Share API where present). |
+| MOB-5 | T2 | **It helps them come back on a computer.** Copy-link or share (`navigator.share` where present). |
 | MOB-6 | T2 | **It appears before heavy loading.** Do not download the game's assets on a device that will not play it. |
-| MOB-7 | T2 | **`<meta name="viewport">` is set** so the sorry screen itself is readable on a phone. |
-| MOB-8 | T2 | **Desktop window too small.** Below the minimum playable size the game scales, scrolls sanely, or asks for a bigger window; it does not clip the HUD off screen. Check at 1280x720 and in a portal-sized frame. |
-| MOB-9 | T2 | **Resize and zoom hold.** Resizing the window, browser zoom 80 to 150%, and high-DPI displays keep the canvas crisp and click coordinates correct. |
-| MOB-10 | T3 | **The decision is recorded** in SHIP.md: desktop only on purpose, and what it would take to support touch. |
+| MOB-7 | T2 | **Desktop window too small.** Below the minimum playable size the game scales, scrolls sanely, or asks for a bigger window; it does not clip the HUD off screen. Check at 1280x720 and in a portal-sized frame. |
+| MOB-8 | T2 | **Resize and zoom hold.** Resizing the window, browser zoom 80 to 150%, and high-DPI displays keep the canvas crisp (backing store scaled by `devicePixelRatio`) and click coordinates correct. |
 
 ## INP: input
 
 | Id | Tier | Check |
 |---|---|---|
-| INP-1 | T1 | **Game keys do not scroll the page.** Arrows, space, and Tab `preventDefault` while playing; critical inside a portal iframe. |
+| INP-1 | T1 | **Game keys do not scroll the page, and browser keys still work.** `preventDefault` only the keys the game uses (arrows, space, wheel via a non-passive listener), only while playing, and never with Ctrl, Alt, or Meta held, so reload, devtools, and tab shortcuts survive. Do not bind Ctrl as a game key: Ctrl+W closes the tab. |
 | INP-2 | T1 | **Right-click and drag behave.** If right-click is a game action, the context menu is suppressed on the canvas only; dragging does not select page text or start an image drag. |
 | INP-3 | T2 | **Focus loss is handled.** Keys held when the window blurs do not stick; clicking back in resumes input. |
 | INP-4 | T2 | **Every action is visible on screen.** Keyboard shortcuts are accelerators for buttons, not the only path, and each shortcut is shown next to its button. |
-| INP-5 | T2 | **Browser shortcuts are not hijacked** (Ctrl+R, Ctrl+W, F5, F12 keep working). |
-| INP-6 | T2 | **Double input is safe.** Double-click, key repeat, or clicking during an animation cannot fire an action twice or act out of turn. |
-| INP-7 | T2 | **Trackpad works.** Pan and zoom do not require a mouse wheel or middle button. |
-| INP-8 | T3 | **Fully playable from the keyboard.** |
+| INP-5 | T2 | **Double input is safe.** Double-click, key repeat, or clicking during an animation cannot fire an action twice or act out of turn. |
+| INP-6 | T2 | **Trackpad works.** Pan and zoom do not require a mouse wheel or middle button. |
+| INP-7 | T2 | **Other keyboard layouts work.** Position keys (WASD) are read from `event.code` so they stay under the same fingers on AZERTY or Dvorak; letter mnemonics use `event.key`. |
+| INP-8 | T3 | **Fully playable from the keyboard**, menus included; Esc always backs out one level. |
 
 ## ERR: errors and recovery
 
@@ -132,24 +127,25 @@ kindly, since portals and shared links send a lot of them.
 |---|---|---|
 | ERR-1 | T1 | **Clean console on a normal run.** No uncaught errors or 404s from title to end screen. |
 | ERR-2 | T1 | **No soft-locks.** No reachable state where the player has no legal action and no way to end: check no-moves-left, all-units-dead, and empty-map cases. |
-| ERR-3 | T2 | **A crash is visible and recoverable.** `window.onerror` and `unhandledrejection` show a "something broke" screen with reload and, if the save might be the cause, start-fresh. Not a frozen canvas. |
+| ERR-3 | T2 | **A crash is visible and recoverable.** `error` and `unhandledrejection` handlers show a "something broke" screen with reload and, if the save might be the cause, start-fresh. Not a frozen canvas. |
 | ERR-4 | T2 | **Debug affordances are off.** Cheat keys, debug overlays, `console.log` spam, and test seeds are removed or behind a flag that is off in the shipped build. |
-| ERR-5 | T2 | **`<noscript>` and unsupported-browser message.** |
-| ERR-6 | T2 | **Server games: disconnect is handled.** Lost connection shows a state, retries, and resumes or explains; a stale client after a deploy is told to reload. |
-| ERR-7 | T3 | **Long-session stability.** An hour of play does not leak memory, listeners, or timers; restart many times and watch. |
+| ERR-5 | T2 | **Server games: disconnect is handled.** Lost connection shows a state, retries, and resumes or explains; a stale client after a deploy is told to reload. |
+| ERR-6 | T3 | **Long-session stability.** An hour of play does not leak memory, listeners, or timers; restart many times and watch. |
+| ERR-7 | T3 | **A missing capability is announced.** A `<noscript>` line, and a message instead of a blank page when a required API (WebGL, Web Audio) is absent. |
 
 ## LOAD: loading and performance
 
 | Id | Tier | Check |
 |---|---|---|
-| LOAD-1 | T1 | **Works from a clean cache on a real host**, not only `file://` or localhost. All paths are relative and case matches exactly (hosts are case-sensitive; a dev machine may not be). |
-| LOAD-2 | T2 | **Something appears immediately.** A loading state for any wait over about a second; no blank white page. |
+| LOAD-1 | T1 | **Works on a real host from a clean profile**: empty cache and empty storage, not `file://` or localhost. All paths are relative and case matches exactly (hosts are case-sensitive; a dev machine may not be). The first run with no save is the one the author never sees. |
+| LOAD-2 | T2 | **Something appears immediately.** A loading state for any wait over about a second; no blank white page. Canvas text waits for `document.fonts.ready`, or the first frame is drawn in a fallback font and stays that way. |
 | LOAD-3 | T2 | **Updates reach players.** Cache-busting (hashed or versioned filenames, or sane cache headers) so a returning player does not run new HTML against old JS. |
-| LOAD-4 | T2 | **Holds frame rate on a modest laptop.** Check the largest map and the busiest moment with integrated graphics or 4x CPU throttle. Redraw only when something changed where the game is turn-based. |
-| LOAD-5 | T2 | **Does not spin when idle or hidden.** No full-rate render loop on a static screen or a background tab. |
-| LOAD-6 | T2 | **No runtime dependency on third-party hosts.** Fonts and libraries are self-hosted, so the game works on a portal CDN, offline-ish, and makes no third-party requests (see PRIV). |
+| LOAD-4 | T2 | **Holds frame rate on a modest laptop.** Check the largest map and the busiest moment with integrated graphics or 4x CPU throttle. |
+| LOAD-5 | T2 | **Does not spin when idle.** A turn-based game redraws when something changed, not at full rate on a static screen; timers stop when the tab is hidden. |
+| LOAD-6 | T2 | **No runtime dependency on third-party hosts.** Fonts and libraries are self-hosted. The network tab on a full run shows only the game's own origin, plus the telemetry endpoint if one was chosen. |
 | LOAD-7 | T3 | **Payload is reasonable.** Images and audio compressed; total size noted in SHIP.md. |
-| LOAD-8 | T3 | **Browser matrix.** Current Chrome, Firefox, and Safari each played once. Mark the ones not tried `unverified`. |
+| LOAD-8 | T2 | **Chrome and Firefox.** Current versions of both, each played once. Mark one not tried `unverified`. |
+| LOAD-9 | T3 | **Safari.** Played once on current Safari, where audio unlock and storage most often differ. `unverified` without a Mac. |
 
 ## A11Y: accessibility
 
@@ -157,10 +153,10 @@ kindly, since portals and shared links send a lot of them.
 |---|---|---|
 | A11Y-1 | T2 | **Text is readable.** Body text around 14px or larger at 1280x720 and contrast of at least 4.5:1 against its background. |
 | A11Y-2 | T2 | **Color is never the only signal.** Teams, danger, and selection also differ by shape, icon, pattern, or label. |
-| A11Y-3 | T2 | **No rapid full-screen flashing**; shake and flashes respect SET-4. |
+| A11Y-3 | T2 | **Nothing flashes more than three times a second**, whatever the settings (SET-4 covers milder motion). |
 | A11Y-4 | T2 | **No reaction-time gate without need.** Timers the design does not depend on can be relaxed or paused. |
 | A11Y-5 | T3 | **DOM UI is labeled and focus-visible**: buttons are `<button>`, images have alt text, focus rings are not removed. |
-| A11Y-6 | T3 | **Simulated colorblind pass** (deuteranopia, protanopia) on a busy screen. |
+| A11Y-6 | T3 | **Simulated colorblind pass** (deuteranopia, protanopia) on a busy screen; add an alternate palette if A11Y-2 alone does not carry it. |
 
 ## TXT: text and copy
 
@@ -175,8 +171,8 @@ kindly, since portals and shared links send a lot of them.
 
 Browser-game audiences are heavily non-English, and with AI doing the translating the
 cost is mostly in whether the code is ready for it. So the audit splits **ready** (T2,
-cheap now, expensive to retrofit) from **translated** (T3, a per-game choice).
-English-only is a valid decision; an unrecorded one is not.
+cheap now, expensive to retrofit) from **translated** (T3, a per-game choice; `n/a` when
+no second language is chosen). English-only is a valid decision; an unrecorded one is not.
 
 | Id | Tier | Check |
 |---|---|---|
@@ -200,28 +196,28 @@ English-only is a valid decision; an unrecorded one is not.
 | Id | Tier | Check |
 |---|---|---|
 | WEB-1 | T1 | **Served over HTTPS at a stable URL** the user is willing to keep. |
-| WEB-2 | T2 | **`<title>`, meta description, and favicon** are set and specific to the game. |
-| WEB-3 | T2 | **Link previews work.** `og:title`, `og:description`, `og:image` (1200x630), `og:url`, and `twitter:card`. Paste the URL into a chat app and look. |
-| WEB-4 | T2 | **A capsule image and three or more screenshots exist**, taken from real play. Portals and the site index both need them. |
-| WEB-5 | T2 | **One-paragraph pitch** written: what it is, what you do, how long a session is. Reused on the page, the portals, and the link preview. |
-| WEB-6 | T2 | **A way back.** Link to the author's other games or site index, opening outside the game frame. |
-| WEB-7 | T2 | **Embedding policy is deliberate.** Decide whether other sites may iframe the game and set `Content-Security-Policy: frame-ancestors` to match. |
-| WEB-8 | T3 | **A short gameplay clip or GIF** for the page and for posts. |
+| WEB-2 | T1 | **Only the game is deployed.** The public directory (and any portal zip) holds the build and nothing else: no `.git`, `.env`, design docs, or backups, and no API key or secret in client code. |
+| WEB-3 | T2 | **`<title>`, meta description, and favicon** are set and specific to the game. |
+| WEB-4 | T2 | **Link previews work.** `og:title`, `og:description`, `og:image` (1200x630, absolute URL), `og:url`, and `twitter:card`. Paste the URL into a chat app and look. |
+| WEB-5 | T2 | **A capsule image and three or more screenshots exist**, taken from real play. Portals and the site index both need them. |
+| WEB-6 | T2 | **One-paragraph pitch** written: what it is, what you do, how long a session is. Reused on the page, the portals, and the link preview. |
+| WEB-7 | T2 | **A way back.** Link to the author's other games or site index, opening outside the game frame. |
+| WEB-8 | T3 | **A short gameplay clip or GIF** for the page, the portal listings, and posts. |
 | WEB-9 | T3 | **404 and old-URL handling** if the game ever moved. |
+| WEB-10 | T3 | **Embedding policy is deliberate.** Decide whether other sites may iframe the own-site copy and send a `Content-Security-Policy: frame-ancestors` header to match (it is ignored in a `<meta>` tag). |
 
 ## LEGAL: licenses, credits, provenance, AI disclosure
 
 | Id | Tier | Check |
 |---|---|---|
-| LEGAL-1 | T1 | **Provenance inventory is complete.** Every image, sound, music track, font, icon set, and library is listed in SHIP.md with its source and license or tool terms. Anything of unknown origin is a T1 blocker until traced or replaced. |
-| LEGAL-2 | T1 | **Third-party licenses are honored.** Attribution text included where required (MIT/BSD notices, OFL for fonts, CC-BY credits); nothing non-commercial-only or no-redistribution is shipped. |
+| LEGAL-1 | T1 | **Provenance inventory is complete.** Every image, sound, music track, font, icon set, and library is listed in SHIP.md with its source and license or tool terms. Anything of unknown origin blocks until traced or replaced. |
+| LEGAL-2 | T1 | **Third-party licenses are honored.** Attribution text included where required (MIT/BSD notices, OFL for fonts, CC-BY credits); nothing no-redistribution is shipped. |
 | LEGAL-3 | T1 | **AI tool terms permit publishing.** For each generative tool used for art, audio, or text, the plan it was used under allows public distribution of outputs. Note the tool and plan in the inventory. |
-| LEGAL-4 | T2 | **Credits screen exists in the game.** Author, tools, third-party assets and libraries, with links. |
+| LEGAL-4 | T2 | **Credits screen in the game**, reachable from the title. Author, tools, third-party assets and libraries, with links. |
 | LEGAL-5 | T2 | **AI disclosure is written, enthusiastic, and accurate.** Name the models and tools and what each made (code, art, sound, writing). Tone: proud of the method, no hedging, no apology, no overclaiming human authorship. Use the same statement in the credits and on portal disclosure fields. |
-| LEGAL-6 | T2 | **The name is clear.** A quick search of the title on the target portals and the web shows no existing game or trademark it collides with. |
-| LEGAL-7 | T2 | **Not a clone.** No names, characters, art, music, or levels lifted from an existing game. |
-| LEGAL-8 | T2 | **The repo's own license is decided** if the source is public: LICENSE file or an explicit "all rights reserved". |
-| LEGAL-9 | T3 | **Content notes** where the theme warrants (violence, flashing), for portal rating fields. |
+| LEGAL-6 | T2 | **The name and content are its own.** A search of the title on the target portals and the web shows no existing game or trademark it collides with; no names, characters, or levels are lifted from an existing game. |
+| LEGAL-7 | T2 | **The repo's own license is decided** if the source is public: LICENSE file or an explicit "all rights reserved". |
+| LEGAL-8 | T3 | **Content notes** where the theme warrants (violence, flashing), on the page and for portal rating fields. |
 
 Example disclosure, to adapt rather than copy:
 
@@ -231,18 +227,12 @@ Example disclosure, to adapt rather than copy:
 
 ## PRIV: privacy and telemetry
 
-Telemetry is decided per game. Present the choice with its tradeoff:
-
-| Option | You learn | You owe |
-|---|---|---|
-| None | Nothing unless players write in | Only to verify there is truly nothing |
-| Error reporting only | Crashes in the wild, with stack and version | A one-line notice; no personal data, no IPs stored |
-| Cookieless counts plus game events | Visits, and where players stop (reached level 2, finished) | A short privacy note; keep events anonymous and few |
+The telemetry decision and its tradeoff table are in SKILL.md step 2.
 
 | Id | Tier | Check |
 |---|---|---|
-| PRIV-1 | T1 | **The decision is recorded** in SHIP.md. |
-| PRIV-2 | T1 | **No accidental tracking.** The network tab on a full run shows no third-party requests the decision does not cover: font CDNs, script CDNs, embedded widgets. |
+| PRIV-1 | T1 | **The telemetry decision is recorded** in SHIP.md. |
+| PRIV-2 | T1 | **No tracking the decision does not cover.** No analytics, ad, or social-widget script or beacon left in the page, including ones a template or generated code brought along. Check the network tab on a full run. |
 | PRIV-3 | T2 | **What is stored is stated.** One or two plain sentences in credits or about: what the game keeps in the browser, and what if anything leaves it. |
 | PRIV-4 | T2 | **If telemetry is on:** no cookies, no identifiers, no free-text from the player, and it fails silently when blocked. |
 | PRIV-5 | T2 | **Server games:** what the server stores per player, how long, and how a player gets it removed. |
@@ -252,12 +242,11 @@ Telemetry is decided per game. Present the choice with its tradeoff:
 | Id | Tier | Check |
 |---|---|---|
 | OPS-1 | T2 | **A feedback channel is reachable from the game.** A link (portal comments, an issue tracker, a form). Avoid publishing a personal email address in plain text. |
-| OPS-2 | T2 | **A version is visible** on the title or credits screen, and tied to the commit that was shipped. |
-| OPS-3 | T2 | **Bug reports carry context.** Version and seed are shown somewhere a player can copy them. |
-| OPS-4 | T2 | **The shipped commit is tagged** and the deploy is repeatable from it. Record the deploy steps for each target. |
-| OPS-5 | T2 | **A patch path is known.** How an update reaches each target, and what happens to in-progress saves (ties to SAVE-4). |
-| OPS-6 | T3 | **A changelog** players can see. |
-| OPS-7 | T3 | **A launch post is drafted**: pitch, clip, link, where it will be shared. |
+| OPS-2 | T2 | **A version is visible** on the title or credits screen, tied to the shipped commit, and copyable along with the seed for bug reports. |
+| OPS-3 | T2 | **The shipped commit is tagged** and the deploy is repeatable from it. Record the steps per target in SHIP.md's Targets table. |
+| OPS-4 | T2 | **A patch path is known.** How an update reaches each target, and what happens to in-progress saves (SAVE-4). |
+| OPS-5 | T3 | **A changelog** players can see. |
+| OPS-6 | T3 | **A launch post is drafted**: pitch, clip, link, where it will be shared. |
 
 ## PLAY: end-to-end play checks
 
@@ -265,9 +254,7 @@ Do these by playing the shipped build, not by reading code.
 
 | Id | Tier | Check |
 |---|---|---|
-| PLAY-1 | T1 | **Played start to finish at least once** on the build being shipped, to a win and to a loss. |
-| PLAY-2 | T1 | **The game is winnable** from a fresh start without author knowledge, on the default settings. |
-| PLAY-3 | T2 | **Cold-open test.** Clear storage, load the public URL, and play five minutes as a stranger. Note every moment of "what do I do now". |
-| PLAY-4 | T2 | **Reload at awkward moments**: mid-animation, mid-enemy-turn, on the end screen, during a modal. Resume is sane each time. |
-| PLAY-5 | T2 | **Someone other than the author has played it** without help. Always `unverified` until the user confirms; it finds more than every other check combined. |
-| PLAY-6 | T3 | **Difficulty curve checked** across several seeds or runs; no unwinnable seeds. |
+| PLAY-1 | T1 | **Played start to finish** on the build being shipped, to a win and to a loss, from a fresh start on default settings with no debug aids. |
+| PLAY-2 | T2 | **Reload at awkward moments**: mid-animation, mid-enemy-turn, on the end screen, during a modal. Resume is sane each time. |
+| PLAY-3 | T2 | **Someone other than the author has played it** without help. Always `unverified` until the user confirms; it finds more than every other check combined. |
+| PLAY-4 | T3 | **Difficulty curve checked** across several seeds or runs; no unwinnable seeds. |
